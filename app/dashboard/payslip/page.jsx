@@ -88,7 +88,7 @@ export default function PayslipPage() {
             <div className="card payslip-sheet" style={{ maxWidth: 860, margin: "0 auto", background: "#ffffff", color: "#111827" }}>
               <div className="payslip-header" style={{ padding: "24px 28px", borderBottom: "2px solid #1f2937", display: "flex", justifyContent: "space-between", gap: 16, alignItems: "flex-start" }}>
                 <div>
-                  <div className="syne" style={{ fontSize: 24, fontWeight: 800, letterSpacing: "0.03em", color: "#0f172a" }}>IUI Solutions</div>
+                  <div className="syne" style={{ fontSize: 24, fontWeight: 800, letterSpacing: "0.03em", color: "#0f172a" }}>Barunaha Entertainment</div>
                   <div style={{ fontSize: 12, color: "#475569", marginTop: 4 }}>Official Salary Statement</div>
                 </div>
                 <div style={{ textAlign: "right" }}>

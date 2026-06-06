@@ -668,6 +668,9 @@ tr:hover td { background: var(--hover-row); }
   background:
     radial-gradient(ellipse at top right, rgba(212,175,55,0.05) 0%, transparent 35%),
     radial-gradient(ellipse at bottom left, rgba(212,175,55,0.03) 0%, transparent 35%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .dashboard-topbar {
@@ -685,6 +688,8 @@ tr:hover td { background: var(--hover-row); }
   z-index: var(--z-layer-chrome);
   isolation: isolate;
   box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 1024px;
 }
 
 .dashboard-topbar__leading {
@@ -705,7 +710,8 @@ tr:hover td { background: var(--hover-row); }
 }
 
 .dashboard-body {
-  width: min(100%, 1240px);
+  width: 100%;
+  max-width: 1024px;
   min-width: 0;
 }
 

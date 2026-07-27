@@ -22,14 +22,39 @@ export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
 
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+
+  useEffect(() => {
+    if (err) {
+      const timer = setTimeout(() => setErr(""), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [err]);
+
   async function handleSubmit(e) {
     e.preventDefault();
+    if (isLocked) {
+      setErr("Account locked due to 5 failed login attempts. Please try again after 5 minutes.");
+      return;
+    }
     setLoading(true);
     setErr("");
     try {
       await login(form);
+      setFailedAttempts(0);
     } catch (e) {
-      setErr(e.message);
+      setErr(e.message || "Invalid username or password");
+      const nextCount = failedAttempts + 1;
+      setFailedAttempts(nextCount);
+      if (nextCount >= 5) {
+        setIsLocked(true);
+        setErr("Account temporarily locked due to 5 failed attempts. Please try again in 5 minutes.");
+        setTimeout(() => {
+          setIsLocked(false);
+          setFailedAttempts(0);
+        }, 5 * 60 * 1000);
+      }
     } finally {
       setLoading(false);
     }
@@ -93,9 +118,9 @@ export default function LoginPage() {
           className="slide-up"
           style={{
             padding: 1,
-            borderRadius: 14,
-            background: "linear-gradient(135deg, rgba(212,175,55,0.3) 0%, transparent 50%, rgba(212,175,55,0.15) 100%)",
-            boxShadow: "0 0 40px rgba(212,175,55,0.16), 0 0 80px rgba(212,175,55,0.08)",
+            borderRadius: 16,
+            background: "linear-gradient(135deg, rgba(124,58,237,0.5) 0%, rgba(6,182,212,0.4) 100%)",
+            boxShadow: "0 0 40px rgba(124,58,237,0.2), 0 0 80px rgba(6,182,212,0.1)",
           }}
         >
           <div
@@ -103,7 +128,8 @@ export default function LoginPage() {
             style={{
               padding: "48px 40px",
               background: "var(--login-card)",
-              borderRadius: 13,
+              borderRadius: 15,
+              border: "none",
             }}
           >
             <div style={{ textAlign: "center", marginBottom: 36 }}>
@@ -115,11 +141,29 @@ export default function LoginPage() {
                   <AppLogo size={62} showText={false} />
                 </div>
               </div>
-              <h1 className="syne" style={{ fontSize: 30, fontWeight: 800, color: "var(--text)" }}>Barunaha Entertainment</h1>
+              <h1 className="syne" style={{ fontSize: 30, fontWeight: 800, color: "var(--text)" }}>IUI Solutions</h1>
               <p style={{ color: "var(--text-2)", fontSize: 13, marginTop: 8, letterSpacing: "0.06em", textTransform: "uppercase" }}>Enterprise HR Mission Control</p>
             </div>
 
             <form onSubmit={handleSubmit}>
+              {err && (
+                <div
+                  style={{
+                    background: "rgba(239,68,68,0.18)",
+                    border: "1px solid #ef4444",
+                    borderRadius: 10,
+                    padding: "12px 16px",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: "#f87171",
+                    marginBottom: 20,
+                    textAlign: "center",
+                    boxShadow: "0 0 20px rgba(239,68,68,0.25)"
+                  }}
+                >
+                  ⚠️ {err}
+                </div>
+              )}
               <div className="form-group">
                 <label className="label">Username or Email</label>
                 <div style={{ position: "relative" }}>
@@ -150,23 +194,12 @@ export default function LoginPage() {
                 <div style={{ marginTop: 8, textAlign: "right" }}>
                   <Link
                     href="/reset-password"
-                    style={{ color: "var(--accent)", fontSize: 13, fontWeight: 600, textDecoration: "none", letterSpacing: "0.02em" }}
+                    style={{ color: "var(--accent-2)", fontSize: 13, fontWeight: 600, textDecoration: "none", letterSpacing: "0.02em" }}
                   >
                     Forgot password?
                   </Link>
                 </div>
               </div>
-
-              {err && (
-                <div
-                  style={{
-                    background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.28)", borderRadius: 10,
-                    padding: "10px 14px", fontSize: 13, color: "#fca5a5", marginBottom: 16,
-                  }}
-                >
-                  ✕ {err}
-                </div>
-              )}
 
               <button
                 className="btn-primary" type="submit" disabled={loading}
@@ -182,17 +215,17 @@ export default function LoginPage() {
                 marginTop: 16,
                 padding: "18px 20px",
                 borderRadius: 12,
-                background: "rgba(212,175,55,0.04)",
-                border: "1px solid rgba(212,175,55,0.18)",
-                boxShadow: "0 0 24px rgba(212,175,55,0.08)",
+                background: "rgba(124,58,237,0.04)",
+                border: "1px solid rgba(124,58,237,0.18)",
+                boxShadow: "0 0 24px rgba(124,58,237,0.08)",
                 animation: "slideUp 0.22s cubic-bezier(0.16,1,0.3,1)",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                   <span style={{ fontSize: 14, opacity: 0.5 }}>◈</span>
                   <span style={{
                     fontSize: 10, fontWeight: 700, letterSpacing: "0.1em",
-                    textTransform: "uppercase", color: "rgba(212,175,55,0.72)",
-                    fontFamily: "Instrument Sans, Helvetica Neue, sans-serif",
+                    textTransform: "uppercase", color: "rgba(124,58,237,0.6)",
+                    fontFamily: "Rajdhani, Outfit, sans-serif",
                   }}>
                     SYSTEM ACCESS
                   </span>
@@ -224,9 +257,9 @@ export default function LoginPage() {
                   style={{
                     width: "100%",
                     justifyContent: "center",
-                    background: "rgba(212,175,55,0.12)",
-                    border: "1px solid rgba(212,175,55,0.25)",
-                    color: "rgba(212,175,55,0.88)",
+                    background: "rgba(124,58,237,0.12)",
+                    border: "1px solid rgba(124,58,237,0.25)",
+                    color: "rgba(124,58,237,0.8)",
                     padding: "10px 16px",
                     borderRadius: 8,
                     cursor: "pointer",

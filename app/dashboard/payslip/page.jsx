@@ -73,8 +73,8 @@ export default function PayslipPage() {
       <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
         <div><h1 className="syne" style={{ fontSize: 28, fontWeight: 800 }}>My Payslip</h1><p style={{ color: "var(--muted)", marginTop: 4 }}>View and download your salary slip</p></div>
         <div style={{ display: "flex", gap: 8 }}>
-          <select className="input" style={{ width: "auto" }} value={month} onChange={(e) => setMonth(+e.target.value)}>{months.map((m, i) => <option key={i} value={i+1}>{m}</option>)}</select>
-          <select className="input" style={{ width: "auto" }} value={year} onChange={(e) => setYear(+e.target.value)}>{[2024,2025,2026].map((y) => <option key={y} value={y}>{y}</option>)}</select>
+          <select className="input" style={{ width: "auto" }} value={month} onChange={(e) => setMonth(+e.target.value)}>{months.map((m, i) => <option key={i} value={i+1} disabled={year === new Date().getFullYear() && i + 1 > new Date().getMonth() + 1}>{m}</option>)}</select>
+          <select className="input" style={{ width: "auto" }} value={year} onChange={(e) => setYear(+e.target.value)}>{[2024,2025,2026].filter((y) => y <= new Date().getFullYear()).map((y) => <option key={y} value={y}>{y}</option>)}</select>
           <button className="btn-primary" onClick={load}>View</button>
         </div>
       </div>
@@ -86,11 +86,11 @@ export default function PayslipPage() {
           </div>
           <div className="payslip-print-root">
             <div className="card payslip-sheet" style={{ maxWidth: 860, margin: "0 auto", background: "#ffffff", color: "#111827" }}>
-              <div className="payslip-header" style={{ padding: "24px 28px", background: "#134E4A", color: "#fff", display: "flex", justifyContent: "space-between", gap: 16, alignItems: "center" }}>
+              <div className="payslip-header" style={{ padding: "24px 28px", background: "#0B1A3A", color: "#fff", display: "flex", justifyContent: "space-between", gap: 16, alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                   <img src="/logo.png" alt="Logo" style={{ height: 42, width: "auto", objectFit: "contain", borderRadius: 4, background: "rgba(255,255,255,0.15)", padding: 4 }} />
                   <div>
-                    <div className="syne" style={{ fontSize: 22, fontWeight: 800, letterSpacing: "0.03em" }}>Barunaha Entertainment Pvt. Ltd.</div>
+                    <div className="syne" style={{ fontSize: 22, fontWeight: 800, letterSpacing: "0.03em" }}>IUI Solutions Pvt. Ltd.</div>
                     <div style={{ fontSize: 11, color: "#CBD5E1", marginTop: 6 }}>Regd. Office: New Delhi, India</div>
                   </div>
                 </div>

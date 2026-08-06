@@ -90,7 +90,7 @@ export default function PayslipPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                   <img src="/logo.png" alt="Logo" style={{ height: 42, width: "auto", objectFit: "contain", borderRadius: 4, background: "rgba(255,255,255,0.15)", padding: 4 }} />
                   <div>
-                    <div className="syne" style={{ fontSize: 22, fontWeight: 800, letterSpacing: "0.03em" }}>IUI Solutions Pvt. Ltd.</div>
+                    <div className="syne" style={{ fontSize: 22, fontWeight: 800, letterSpacing: "0.03em" }}>Barunaha Entertainment Pvt. Ltd.</div>
                     <div style={{ fontSize: 11, color: "#CBD5E1", marginTop: 6 }}>Regd. Office: New Delhi, India</div>
                   </div>
                 </div>

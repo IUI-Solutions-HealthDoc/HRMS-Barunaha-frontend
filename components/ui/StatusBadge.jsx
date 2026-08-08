@@ -11,9 +11,9 @@ export default function StatusBadge({ status, label }) {
     half_day: ["#f59e0b", "Half Day"],
     late: ["#f97316", "Late"],
     early_leave: ["#eab308", "Early Leave"],
-    submitted: ["#B8941F", "Submitted"],
-    reviewing: ["#B8941F", "Reviewing"],
-    reviewed: ["#D4AF37", "Reviewed"],
+    submitted: ["#6366f1", "Submitted"],
+    reviewing: ["#6366f1", "Reviewing"],
+    reviewed: ["#8b5cf6", "Reviewed"],
     completed: ["#10b981", "Completed"],
     "needs revisions": ["#f97316", "Needs Revisions"],
     approved_hr: ["#10b981", "Approved by HR"],
@@ -25,6 +25,8 @@ export default function StatusBadge({ status, label }) {
     rejected_admin: ["#ef4444", "Rejected by Admin"],
     compoff: ["#06b6d4", "Comp-Off"],
     extra_pay: ["#f59e0b", "Extra Pay"],
+    wfh: ["#06b6d4", "Work From Home"],
+    work_from_home: ["#06b6d4", "Work From Home"],
   };
   const [color, defaultLabel] = map[status?.toLowerCase()] || ["#64748b", status || "—"];
   return (

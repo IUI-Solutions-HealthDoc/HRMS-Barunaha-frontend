@@ -21,7 +21,7 @@ function EmployeeDashboard({ user, showToast }) {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [leaveModal, setLeaveModal] = useState(false);
-  const [leaveForm, setLeaveForm] = useState({ subject: "", description: "", start_date: "", end_date: "" });
+  const [leaveForm, setLeaveForm] = useState({ subject: "", description: "", start_date: "", end_date: "", leave_type: "Casual Leave" });
 
   useEffect(() => {
     const load = async () => {
@@ -43,6 +43,10 @@ function EmployeeDashboard({ user, showToast }) {
   }, []);
 
   async function submitQuickLeave() {
+    const todayStr = new Date().toISOString().split("T")[0];
+    if (!leaveForm.start_date || !leaveForm.end_date) { showToast("Please select both start and end dates", "error"); return; }
+    if (leaveForm.end_date < leaveForm.start_date) { showToast("End date cannot be before start date", "error"); return; }
+    if (leaveForm.start_date < todayStr) { showToast("Start date cannot be in the past", "error"); return; }
     try {
       await apiFetch("/leave/apply", {
         method: "POST",
@@ -51,11 +55,12 @@ function EmployeeDashboard({ user, showToast }) {
           description: leaveForm.description || "Leave requested",
           start_date: leaveForm.start_date,
           end_date: leaveForm.end_date,
+          leave_type: leaveForm.leave_type,
         }),
       });
       showToast("Leave applied!");
       setLeaveModal(false);
-      setLeaveForm({ subject: "", description: "", start_date: "", end_date: "" });
+      setLeaveForm({ subject: "", description: "", start_date: "", end_date: "", leave_type: "Casual Leave" });
     } catch (e) {
       showToast(e.message, "error");
     }
@@ -147,10 +152,17 @@ function EmployeeDashboard({ user, showToast }) {
       {leaveModal && (
         <Modal title="Apply for Leave" onClose={() => setLeaveModal(false)}
           footer={<><button className="btn-ghost" onClick={() => setLeaveModal(false)}>Cancel</button><button className="btn-primary" onClick={submitQuickLeave}>Apply</button></>}>
+          <div className="form-group"><label className="label">Leave Category</label>
+            <select className="input" value={leaveForm.leave_type} onChange={(e) => setLeaveForm((form) => ({ ...form, leave_type: e.target.value }))}>
+              <option value="Casual Leave">Casual Leave (CL)</option>
+              <option value="Sick Leave">Sick Leave (SL)</option>
+              <option value="Privileged Leave">Privileged Leave (PL)</option>
+            </select>
+          </div>
           <div className="form-group"><label className="label">Subject</label><input className="input" value={leaveForm.subject} onChange={(e) => setLeaveForm((form) => ({ ...form, subject: e.target.value }))} /></div>
           <div className="form-row">
-            <div className="form-group"><label className="label">Start Date</label><input className="input" type="date" value={leaveForm.start_date} onChange={(e) => setLeaveForm((form) => ({ ...form, start_date: e.target.value }))} /></div>
-            <div className="form-group"><label className="label">End Date</label><input className="input" type="date" value={leaveForm.end_date} onChange={(e) => setLeaveForm((form) => ({ ...form, end_date: e.target.value }))} /></div>
+            <div className="form-group"><label className="label">Start Date</label><input className="input" type="date" min={new Date().toISOString().split("T")[0]} value={leaveForm.start_date} onChange={(e) => setLeaveForm((form) => ({ ...form, start_date: e.target.value }))} /></div>
+            <div className="form-group"><label className="label">End Date</label><input className="input" type="date" min={leaveForm.start_date || new Date().toISOString().split("T")[0]} value={leaveForm.end_date} onChange={(e) => setLeaveForm((form) => ({ ...form, end_date: e.target.value }))} /></div>
           </div>
           <div className="form-group"><label className="label">Description</label><textarea className="input" rows={3} value={leaveForm.description} onChange={(e) => setLeaveForm((form) => ({ ...form, description: e.target.value }))} /></div>
         </Modal>
@@ -173,13 +185,17 @@ function HRDashboard({ showToast }) {
 
   const presentStatuses = new Set(["present", "late", "half_day", "early_leave"]);
   const present = today.filter((t) => presentStatuses.has((t.status || "").toLowerCase())).length;
-  const absent = today.filter((t) => !presentStatuses.has((t.status || "").toLowerCase())).length;
+  const wfh = today.filter((t) => (t.status || "").toLowerCase() === "wfh" || (t.status || "").toLowerCase() === "work_from_home").length;
+  const absent = today.filter((t) => (t.status || "").toLowerCase() === "absent" || (!presentStatuses.has((t.status || "").toLowerCase()) && (t.status || "").toLowerCase() !== "wfh" && (t.status || "").toLowerCase() !== "work_from_home")).length;
   const totalEmployees = today.length;
 
   const filteredToday = today.filter((t) => {
-    const isPresent = presentStatuses.has((t.status || "").toLowerCase());
+    const st = (t.status || "").toLowerCase();
+    const isPresent = presentStatuses.has(st);
+    const isWfh = st === "wfh" || st === "work_from_home";
     if (filterType === "present") return isPresent;
-    if (filterType === "absent") return !isPresent;
+    if (filterType === "wfh") return isWfh;
+    if (filterType === "absent") return st === "absent" || (!isPresent && !isWfh);
     return true;
   });
 
@@ -216,6 +232,18 @@ function HRDashboard({ showToast }) {
           style={{
             border: filterType === "present" ? "1px solid #10b981" : "1px solid var(--border)",
             boxShadow: filterType === "present" ? "0 0 16px rgba(16, 185, 129, 0.25)" : "none",
+            transition: "all 0.2s ease",
+          }}
+        />
+        <StatCard
+          icon="🏠"
+          label="Work From Home"
+          value={wfh}
+          accent="#06b6d4"
+          onClick={() => setFilterType("wfh")}
+          style={{
+            border: filterType === "wfh" ? "1px solid #06b6d4" : "1px solid var(--border)",
+            boxShadow: filterType === "wfh" ? "0 0 16px rgba(6, 182, 212, 0.25)" : "none",
             transition: "all 0.2s ease",
           }}
         />
